@@ -11,6 +11,9 @@ use App\Core\Database;
  */
 class User
 {
+
+    const USER_ROLE = 'ROLE_USER';
+
     private $db;
 
     /**
@@ -32,15 +35,15 @@ class User
      */
     public function create(array $data): void
     {
-        $stmt = $this->db->prepare("
-            INSERT INTO users (first_name, last_name, email, phone, password) 
-            VALUES (:first_name, :last_name, :email, :phone, :password)");
-        $stmt->bindValue(':first_name', $data['first_name']);
-        $stmt->bindValue(':last_name', $data['last_name']);
-        $stmt->bindValue(':email', $data['email']);
-        $stmt->bindValue(':phone', $data['phone']);
-        $stmt->bindValue(':password', password_hash($data['password'], PASSWORD_DEFAULT));
-        $stmt->execute();
+        $this->db->query("
+            INSERT INTO users (first_name, last_name, roles, email, password) 
+            VALUES (:first_name, :last_name, :roles, :email, :password)");
+        $this->db->bind(':first_name', $data['first_name']);
+        $this->db->bind(':last_name', $data['last_name']);
+        $this->db->bind(':email', $data['email']);
+        $this->db->bind(':roles', json_encode([self::USER_ROLE]));
+        $this->db->bind(':password', password_hash($data['password'], PASSWORD_DEFAULT));
+        $this->db->execute();
     }
 
     /**

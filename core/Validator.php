@@ -51,33 +51,6 @@ class Validator
     }
 
     /**
-     * Validates that the given field contains a valid phone number.
-     * Accepts digits with optional leading + and length between 10 and 15.
-     *
-     * @param string $field The field name to validate.
-     * @return void
-     */
-    public function phone(string $field): void
-    {
-        if (!empty($this->data[$field]) && !preg_match('/^\+?[0-9]{10,15}$/', $this->data[$field])) {
-            $this->errors[$field] = 'Invalid phone number';
-        }
-    }
-
-    /**
-     * Normalizes a phone number by removing non-digit characters except the first "+".
-     *
-     * @param string $field The raw phone input.
-     * @return string The normalized phone number.
-     */
-    public function normalizePhone(string $field): string
-    {
-        $phone = preg_replace('/[^\d+]/', '', $field);
-        return preg_replace('/(?!^)\+/', '', $phone);
-    }
-
-
-    /**
      * Validates that the given field has at least a certain number of characters.
      *
      * @param string $field The field name to validate.
@@ -122,7 +95,7 @@ class Validator
         $password = $this->data[$field] ?? '';
 
         if (!preg_match('/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{6,16}$/', $password)) {
-            $this->errors[$field] = 'Password must be at least 8 characters and contain at least one lowercase letter, one uppercase letter, one number, and one special character.';
+            $this->errors[$field] = 'Password must be at least 6 characters and contain at least one lowercase letter, one uppercase letter, one number, and one special character.';
         }
     }
 

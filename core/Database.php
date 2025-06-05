@@ -33,6 +33,7 @@ class Database
      */
     public static function getInstance(): PDO
     {
+
         if (!self::$instance) {
             $host = getenv("DB_HOST");
             $db   = getenv("DB_NAME");
@@ -100,4 +101,16 @@ class Database
     {
         $this->stmt->bindValue($param, $value);
     }
+
+    /**
+     * Executes the statement and fetches all results as associative arrays.
+     *
+     * @return array
+     */
+    public function resultSet(): array
+    {
+        $this->execute();
+        return $this->stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
 }
