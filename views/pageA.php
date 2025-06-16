@@ -6,12 +6,17 @@
     <p id="error-msg" style="display: none; color: red;"></p>
 </div>
 <script>
+    const csrfToken = '<?= $_SESSION['csrf_token'] ?? '' ?>';
+</script>
+<script>
     document.getElementById('buy-cow-btn').addEventListener('click', function () {
         fetch('/cow/buy', {
             method: 'POST',
             headers: {
-                'X-Requested-With': 'XMLHttpRequest'
-            }
+                'Content-Type': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest',
+                'X-CSRF-Token': csrfToken
+            },
         })
             .then(response => response.json())
             .then(data => {

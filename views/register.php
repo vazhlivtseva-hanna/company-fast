@@ -9,6 +9,7 @@
     </div>
 <?php endif; ?>
 <form class="needs-validation" method="POST">
+    <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrf_token) ?>">
     <input class="form-control mb-1" name="first_name" placeholder="First Name" required aria-describedby="firstNameHelp">
     <small id="firstNameHelp" class="form-text text-muted mb-2">Enter your first name (e.g., Anna)</small>
 

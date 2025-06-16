@@ -51,7 +51,7 @@ class Database
             try {
                 self::$instance = new PDO($dsn, $user, $pass, $options);
             } catch (PDOException $e) {
-                die("Database connection error: " . $e->getMessage());
+                throw new \Exception("Database connection error: " . $e->getMessage());
             }
         }
 

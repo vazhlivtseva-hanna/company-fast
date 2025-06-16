@@ -1,17 +1,27 @@
 <?php
 
-namespace App\controllers;
+namespace App\Controllers;
 
-use App\Core\Controller;
-use App\models\ActivityLog;
+use App\Core\BaseController;
+use App\Services\ActivityLogService;
+use App\Services\ReportService;
 
 /**
  * Class StatisticsController
  *
  * Handles the statistics page for administrators.
  */
-class StatisticsController extends Controller
+class StatisticsController extends BaseController
 {
+    /**
+     * @param ActivityLogService $activityLogService
+     * @param ReportService $reportService
+     */
+    public function __construct(
+        private ActivityLogService $activityLogService,
+        private ReportService $reportService
+    ) {}
+
     /**
      * Displays the statistics page with filters and user activity logs.
      *
@@ -24,10 +34,7 @@ class StatisticsController extends Controller
     public function index()
     {
         // Ensure the user has admin privileges
-        if (!isAdmin()) {
-            http_response_code(403);
-            exit('Access denied');
-        }
+        $this->checkAccess('ROLE_ADMIN');
 
         // Collect filter values from the query string
         $filters = [
@@ -39,12 +46,15 @@ class StatisticsController extends Controller
             'page_name'    => $_GET['page_name'] ?? null,
         ];
 
-        // Log the admin viewing the statistics page
-        $logger = $this->loadModel('ActivityLog');
-        $logger->log('view_page', 'statistics');
-
-        // Retrieve filtered activity logs
-        $logs = $logger->getFilteredLogs($filters);
+        try {
+            // Log the admin viewing the statistics page
+            $this->activityLogService->log('view_page', 'statistics');
+            // Retrieve filtered activity logs
+            $logs = $this->reportService->getFilteredLogs($filters);
+        } catch (\Exception $e) {
+            $logs = [];
+            $this->handleException($e);
+        }
 
         // Render the view and pass logs and filters
         $this->renderView('statistics', [

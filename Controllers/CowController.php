@@ -2,15 +2,21 @@
 
 namespace App\Controllers;
 
-use App\Core\Controller;
+
+use App\Core\BaseController;
+use App\Services\ActivityLogService;
 
 /**
  * Class CowController
  *
  * Handles Page A view and "Buy a Cow" action for authenticated users.
  */
-class CowController extends Controller
+class CowController extends BaseController
 {
+    public function __construct(
+        private ActivityLogService $activityLogService,
+    ) {}
+
     /**
      * Displays Page A with the "Buy a Cow" button.
      *
@@ -21,14 +27,15 @@ class CowController extends Controller
     public function pageA(): void
     {
         // Ensure the user is authenticated
-        if (!isset($_SESSION['user']['id'])) {
-            http_response_code(403);
-            exit('Unauthorized');
+        $this->requireAuthRedirect();
+
+        try {
+            // Log the page view for Page A
+            $this->activityLogService->log('view_page', 'pageA');
+        } catch (\Exception $exception) {
+            $this->handleException($exception);
         }
 
-        // Log the page view for Page A
-        $logger = $this->loadModel('ActivityLog');
-        $logger->log('view_page', 'pageA');
 
         // Render the view for Page A
         $this->renderView('pageA');
@@ -45,25 +52,15 @@ class CowController extends Controller
     public function buy(): void
     {
         // Ensure the user is authenticated
-        if (!isset($_SESSION['user']['id'])) {
-            http_response_code(403);
-            exit('Unauthorized');
-        }
+        $this->requireAuthRedirect();
 
         try {
             // Log the button click for "Buy a Cow"
-            $logger = $this->loadModel('ActivityLog');
-            $logger->log('button_click', 'pageA', 'buy');
-
+            $this->activityLogService->log('button_click', 'pageA', 'buy');
             // Return success response
-            echo json_encode(['message' => 'Thank you for your purchase!']);
+            $this->json(['message' => 'Thank you for your purchase!']);
         } catch (\Exception $exception) {
-            // Handle exceptions and return error response
-            http_response_code(500);
-            echo json_encode([
-                'error' => true,
-                'message' => $exception->getMessage()
-            ]);
+            $this->handleException($exception);
         }
     }
 }

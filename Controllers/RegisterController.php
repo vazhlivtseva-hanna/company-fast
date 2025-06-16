@@ -1,16 +1,18 @@
 <?php
 
-namespace App\controllers;
+namespace App\Controllers;
 
-use App\Core\Controller;
 use App\Core\Validator;
+use App\Core\BaseController;
+use App\Services\ActivityLogService;
+use App\Services\UserService;
 
 /**
  * Class RegisterController
  *
  * Handles user registration and input validation.
  */
-class RegisterController extends Controller
+class RegisterController extends BaseController
 {
     /** @const int Minimum length for first name and last name */
     const MIN_LENGTH = 4;
@@ -27,6 +29,11 @@ class RegisterController extends Controller
     /** @const int Maximum allowed length for the last name */
     const MAX_LAST_NAME_LENGTH = 25;
 
+    public function __construct(
+        private ActivityLogService $activityLogService,
+        private UserService $userService,
+    ) {}
+
     /**
      * Displays the user registration form.
      *
@@ -37,10 +44,15 @@ class RegisterController extends Controller
      */
     public function showForm(): void
     {
-        $logger = $this->loadModel('ActivityLog');
-        $logger->log('view_page', 'register');
+        try {
+            $this->activityLogService->log('view_page', 'register');
+        } catch (\Exception $exception) {
+            $this->handleException($exception);
+        }
 
-        $this->renderView('register');
+        $this->renderView('register', [
+            'csrf_token' => generateCsrfToken(),
+        ]);
     }
 
     /**
@@ -55,8 +67,6 @@ class RegisterController extends Controller
      */
     public function submitForm(): void
     {
-        $userModel = $this->loadModel("User");
-
         // Validate form input
         $validator = new Validator($_POST);
         $validator->required(['first_name', 'last_name', 'email', 'password']);
@@ -72,15 +82,14 @@ class RegisterController extends Controller
         $errors = $validator->errors();
 
         // Check if the email is already registered
-        if ($userModel->findByEmail($_POST['email'])) {
+        if ($this->userService->findByEmail($_POST['email'])) {
             $errors['email'] = 'Email is already taken';
         }
 
         // If no validation errors, create the user
         if (empty($errors)) {
-            $userModel->create($_POST);
-            header("Location: /?url=login");
-            exit;
+            $this->userService->create($_POST);
+            $this->redirect('/login');
         } else {
             // Otherwise, return to the form with validation errors
             $this->renderView('register', ['errors' => $errors]);

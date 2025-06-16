@@ -52,7 +52,7 @@
                 <?php require_once __DIR__ . '/sidebar.php'; ?>
             </nav>
           <?php endif; ?>
-        <main class="main-content"><?php require_once __DIR__ . '/../views/' . $viewPath . '.php'; ?>
+        <main class="main-content"><?php include $viewPath . '.php'; ?>
         </main>
         </div>
 </body>

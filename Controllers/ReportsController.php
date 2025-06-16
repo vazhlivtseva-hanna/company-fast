@@ -1,17 +1,25 @@
 <?php
 
-namespace App\controllers;
+namespace App\Controllers;
 
-use App\Core\Controller;
-use App\models\ActivityLog;
+use App\Core\BaseController;
+use App\Services\ReportService;
 
 /**
  * Class ReportsController
  *
  * Handles the reports page for administrators.
  */
-class ReportsController extends Controller
+class ReportsController extends BaseController
 {
+
+    /**
+     * @param ReportService $reportService
+     */
+    public function __construct(
+        private  ReportService $reportService
+    ) {}
+
     /**
      * Displays the daily activity reports with chart and table.
      *
@@ -23,16 +31,8 @@ class ReportsController extends Controller
     public function index()
     {
         // Ensure the user has admin privileges
-        if (!isAdmin()) {
-            http_response_code(403);
-            exit('Access denied');
-        }
-
-        // Load activity log model
-        $logger = $this->loadModel('ActivityLog');
-
-        // Get aggregated activity report grouped by date
-        $reportData = $logger->getDailyReportData();
+        $this->checkAccess('ROLE_ADMIN');
+        $reportData = $this->reportService->getGroupedReportData();
 
         // Render the reports view with the data
         $this->renderView('reports', ['reportData' => $reportData]);

@@ -1,12 +1,14 @@
 {
   "autoload": {
     "psr-4": {
-      "App\\Core\\": "core/",
-      "App\\Controllers\\": "controllers/",
-      "App\\Models\\": "models/"
+      "App\\Core\\": "Core/",
+      "App\\Controllers\\": "Controllers/",
+      "App\\Models\\": "Models/",
+      "App\\Services\\": "Services/",
+      "App\\Middlewares\\": "Middlewares/"
     },
     "files": [
-      "core/helpers.php"
+      "Core/helpers.php"
     ]
   },
   "require": {

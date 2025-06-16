@@ -1,16 +1,25 @@
 <?php
 
-namespace App\controllers;
+namespace App\Controllers;
 
-use App\Core\Controller;
+use App\Core\BaseController;
+use App\Services\ActivityLogService;
+use App\Services\AuthService;
+use App\Services\LogService;
 
 /**
  * Class AuthController
  *
  * Handles user authentication: login, logout, and session management.
  */
-class AuthController extends Controller
+class AuthController extends BaseController
 {
+    public function __construct(
+        private AuthService $authService,
+        private LogService $logService,
+        private ActivityLogService $activityLogService,
+    ) {}
+
     /**
      * Handles the login form submission.
      *
@@ -23,12 +32,6 @@ class AuthController extends Controller
      */
     public function submitForm(): void
     {
-        // CSRF token validation
-        if (!validateCsrfToken($_POST['csrf_token'] ?? '')) {
-            $this->renderView("login", ['error' => 'Invalid CSRF token.']);
-            return;
-        }
-
         // Sanitize and validate inputs
         $email = trim($_POST['email'] ?? '');
         $password = $_POST['password'] ?? '';
@@ -38,22 +41,24 @@ class AuthController extends Controller
             return;
         }
 
-        // Attempt to find the user and verify credentials
-        $userModel = $this->loadModel("User");
-        $user = $userModel->findByEmail($email);
+        try {
+            $user = $this->authService->authenticate($email, $password);
 
-        if ($user && password_verify($password, $user['password'])) {
-            $_SESSION['user'] = $user;
+            if ($user) {
+                $_SESSION['user'] = $user;
 
-            // Handle "remember me" functionality
-            if (!empty($_POST['remember'])) {
-                setcookie('remember_email', $email, time() + (86400 * 30), "/"); // 30 days
+                // Remember email if checkbox was selected
+                if (!empty($_POST['remember'])) {
+                    $this->authService->rememberEmail($email);
+                }
+
+                $this->redirect('/dashboard');
+            } else {
+                $this->logService->write("Failed login attempt for email: $email", 'WARNING');
+                $this->renderView("login", ['error' => 'Invalid credentials.']);
             }
-
-            header("Location: /dashboard");
-            exit;
-        } else {
-            $this->renderView("login", ['error' => 'Invalid credentials.']);
+        } catch (\Exception $e) {
+            $this->handleException($e);
         }
     }
 
@@ -67,8 +72,11 @@ class AuthController extends Controller
      */
     public function showForm(): void
     {
-        $logger = $this->loadModel('ActivityLog');
-        $logger->log('view_page', 'login');
+        try {
+            $this->activityLogService->log('view_page', 'login');
+        } catch (\Exception $exception) {
+            $this->handleException($exception);
+        }
 
         $this->renderView("login", [
             'rememberedEmail' => $_COOKIE['remember_email'] ?? '',
@@ -86,10 +94,12 @@ class AuthController extends Controller
      */
     public function logout(): void
     {
-        $logger = $this->loadModel('ActivityLog');
-        $logger->log('view_page', 'logout');
-
-        session_destroy();
-        header('Location: ?route=login');
+        try {
+            $this->activityLogService->log('view_page', 'logout');
+            session_destroy();
+            header('Location: ?route=login');
+        } catch (\Exception $exception) {
+            $this->handleException($exception);
+        }
     }
 }

@@ -1,15 +1,15 @@
 <?php
 
-namespace App\controllers;
+namespace App\Controllers;
 
-use App\Core\Controller;
+use App\Core\BaseController;
 
 /**
  * Class IndexController
  *
  * Handles the main dashboard view for authenticated users.
  */
-class IndexController extends Controller
+class IndexController extends BaseController
 {
     /**
      * Displays the dashboard page.
@@ -23,11 +23,7 @@ class IndexController extends Controller
     public function dashboard()
     {
         // Ensure the user is logged in
-        if (!isset($_SESSION['user']['id'])) {
-            http_response_code(403);
-            exit('Unauthorized');
-        }
-
+        $this->requireAuthRedirect();
         // Render the dashboard view with user data
         $this->renderView("dashboard", ["user" => $_SESSION['user']]);
     }
