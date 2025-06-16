@@ -27,32 +27,33 @@
 
 <!-- Подключение Chart.js -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
 <script>
     const ctx = document.getElementById('reportChart').getContext('2d');
     const data = {
-        labels: <?= json_encode(array_column($reportData, 'date')) ?>,
+        labels: <?= json_encode($chartData['dates']) ?>,
         datasets: [
             {
                 label: 'Page View A',
-                data: <?= json_encode(array_column($reportData, 'pageA_views')) ?>,
+                data: <?= json_encode($chartData['pageA_views']) ?>,
                 borderColor: 'blue',
                 fill: false
             },
             {
                 label: 'Page View B',
-                data: <?= json_encode(array_column($reportData, 'pageB_views')) ?>,
+                data: <?= json_encode($chartData['pageB_views']) ?>,
                 borderColor: 'green',
                 fill: false
             },
             {
                 label: 'Buy a Cow',
-                data: <?= json_encode(array_column($reportData, 'buy_clicks')) ?>,
+                data: <?= json_encode($chartData['buy_clicks']) ?>,
                 borderColor: 'orange',
                 fill: false
             },
             {
                 label: 'Download',
-                data: <?= json_encode(array_column($reportData, 'download_clicks')) ?>,
+                data: <?= json_encode($chartData['download_clicks']) ?>,
                 borderColor: 'red',
                 fill: false
             },

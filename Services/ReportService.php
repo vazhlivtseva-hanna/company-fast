@@ -43,4 +43,25 @@ class ReportService
     {
         return $this->logger->getFilteredLogs($filters);
     }
+
+    /**
+     * Prepares chart data arrays for frontend chart rendering (Chart.js).
+     *
+     * This method extracts specific keys (date, page views, actions) from
+     * the aggregated report data using array_column. This makes it suitable
+     * for passing to JavaScript as separate datasets.
+     *
+     * @param array $reportData Aggregated report data from the database.
+     * @return array Associative array with separate arrays for each metric.
+     */
+    public function prepareChartData(array $reportData): array
+    {
+        return [
+            'dates' => array_column($reportData, 'date'),
+            'pageA_views' => array_column($reportData, 'pageA_views'),
+            'pageB_views' => array_column($reportData, 'pageB_views'),
+            'buy_clicks' => array_column($reportData, 'buy_clicks'),
+            'download_clicks' => array_column($reportData, 'download_clicks'),
+        ];
+    }
 }

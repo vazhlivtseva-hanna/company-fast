@@ -33,8 +33,11 @@ class ReportsController extends BaseController
         // Ensure the user has admin privileges
         $this->checkAccess('ROLE_ADMIN');
         $reportData = $this->reportService->getGroupedReportData();
+        $chartData = $this->reportService->prepareChartData($reportData);
 
-        // Render the reports view with the data
-        $this->renderView('reports', ['reportData' => $reportData]);
+        $this->renderView('reports', [
+            'reportData' => $reportData,
+            'chartData' => $chartData,
+        ]);
     }
 }
