@@ -29,6 +29,10 @@ class RegisterController extends BaseController
     /** @const int Maximum allowed length for the last name */
     const MAX_LAST_NAME_LENGTH = 25;
 
+    /**
+     * @param ActivityLogService $activityLogService
+     * @param UserService $userService
+     */
     public function __construct(
         private ActivityLogService $activityLogService,
         private UserService $userService,

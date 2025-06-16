@@ -13,6 +13,9 @@ use App\Services\ActivityLogService;
  */
 class CowController extends BaseController
 {
+    /**
+     * @param ActivityLogService $activityLogService
+     */
     public function __construct(
         private ActivityLogService $activityLogService,
     ) {}

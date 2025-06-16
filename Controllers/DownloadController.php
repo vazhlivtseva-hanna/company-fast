@@ -14,6 +14,10 @@ use App\Services\FileService;
 class DownloadController extends BaseController
 {
 
+    /**
+     * @param FileService $fileService
+     * @param ActivityLogService $activityLogService
+     */
     public function __construct(
         private FileService $fileService,
         private ActivityLogService $activityLogService,
