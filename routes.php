@@ -29,8 +29,8 @@ return [
         'controller' => 'CowController',
         'method' => 'pageA',
     ],
-    'cow/buy.post' => [
-        'controller' => 'CowController',
+    'api/cow.post' => [
+        'controller' => 'Api\\CowController',
         'method' => 'buy',
     ],
     'download.get' => [

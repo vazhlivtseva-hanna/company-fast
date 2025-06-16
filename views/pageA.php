@@ -10,7 +10,7 @@
 </script>
 <script>
     document.getElementById('buy-cow-btn').addEventListener('click', function () {
-        fetch('/cow/buy', {
+        fetch('/api/cow/buy', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
