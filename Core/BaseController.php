@@ -37,7 +37,7 @@ class BaseController
      * @param string $redirectUrl
      * @return void
      */
-    protected function requireAuthRedirect($redirectUrl = '/login')
+    protected function requireAuthRedirect(string $redirectUrl = '/login')
     {
         if (!isset($_SESSION['user']['id'])) {
             header("Location: $redirectUrl");
@@ -52,7 +52,7 @@ class BaseController
      * @param int $status
      * @return void
      */
-    protected function jsonResponse($data = [], $status = 200)
+    protected function jsonResponse(array $data = [], int $status = 200)
     {
         http_response_code($status);
         header('Content-Type: application/json');
@@ -67,7 +67,7 @@ class BaseController
      * @param array $params
      * @return void
      */
-    protected function renderView($view, $params = [])
+    protected function renderView(string $view, array $params = [])
     {
         extract($params);
         $viewPath = __DIR__ . '/../views/' . $view;
@@ -81,7 +81,7 @@ class BaseController
      * @param string|null $role
      * @return void
      */
-    protected function checkAccess($role = null)
+    protected function checkAccess(string $role = null)
     {
         if (!isset($_SESSION['user'])) {
             $this->jsonResponse(['error' => 'Unauthorized'], 401);
@@ -113,7 +113,7 @@ class BaseController
      * @return object
      * @throws \Exception
      */
-    protected function loadModel($modelName)
+    protected function loadModel(string $modelName)
     {
         $modelPath = __DIR__ . '/../Models/' . $modelName . '.php';
 
