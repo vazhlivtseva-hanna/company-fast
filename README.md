@@ -162,4 +162,4 @@ In `routes.php`, for example:
 
 ---
 
-© 2025 Company Fast Project Refactor
+© 2025 Company Fast Project
