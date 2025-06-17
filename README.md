@@ -17,19 +17,60 @@ Includes registration, login, role-based access, event logging, and graphical re
 
 ---
 
-## 🧱 Project Structure
+## ✅ Key Improvements
 
+### ✅ PSR-4 Autoloading
+- Autoloading is handled via `composer.json`.
+- All classes follow PSR-4 namespace mapping:
+  - `App\Core\` → `/Core`
+  - `App\Controllers\` → `/Controllers`
+  - `App\Controllers\Api\` → `/Controllers/Api`
+  - `App\Services\` → `/Services`
+  - `App\Models\` → `/Models`
+  - `App\Middlewares\` → `/Middlewares`
+
+### ✅ Dependency Injection (DI)
+- Controllers receive services via constructor injection.
+- Logic is moved out of controllers into Service classes.
+
+### ✅ Removed loadModel()
+- Dynamic model loading via `loadModel()` removed.
+- Now all dependencies are explicitly declared via DI (resolved using `resolve()`).
+
+### ✅ Separated Logic Layers
+- Business logic (like logging, user handling) resides in dedicated services.
+- Controllers handle request/response only.
+
+### ✅ Better Exception Handling
+- Centralized `handleException()` method used.
+- Controllers no longer use `die()` or raw `echo`.
+
+### ✅ CSRF Middleware
+- CSRF token check is performed centrally.
+- Token can be passed via header or hidden input.
+
+### ✅ API/HTML Separation
+- API endpoints are located in `App\Controllers\Api`.
+- HTML-rendering controllers remain in `App\Controllers`.
+
+## 📦 Composer Commands
+
+```bash
+composer install       # Install dependencies
+composer dump-autoload # Rebuild autoloader
+```
+
+## 🗂 Folder Structure (PSR-4)
 ```
 company-fast/
-├── app/                 # Controllers, models, views
-├── core/                # App, Controller, Database, Validator, etc.
-├── public/              # Entry point (index.php)
-├── views/               # Blade-style PHP templates
-├── routes.php           # Centralized routing table
-├── .env                 # Environment variables
-├── docker-compose.yml   # Docker setup
-├── downloads/           # .exe files to download
-└── composer.json        # Composer autoloading & dependencies
+├── Core/
+├── Controllers/
+│   └── Api/
+├── Models/
+├── Services/
+├── Middlewares/
+├── views/
+└── public/
 ```
 
 ---
@@ -68,8 +109,6 @@ App will be available at: [http://localhost:8083](http://localhost:8083)
 | `/statistics` | GET    | Event log table + filters            | Admin   |
 | `/reports`    | GET    | Graphs + table with daily activity   | Admin   |
 
----
-
 ## 📊 Statistics Page
 
 - Filter logs by:
@@ -83,7 +122,7 @@ App will be available at: [http://localhost:8083](http://localhost:8083)
 
 ## 📈 Reports Page
 
-- Graph: 
+- Graph:
   - X axis — dates
   - Y axis — number of events per day
   - Events: `page view A`, `page view B`, `Buy a cow`, `Download`
@@ -101,12 +140,26 @@ App will be available at: [http://localhost:8083](http://localhost:8083)
 ---
 
 ## ✅ TODO
-
-- Add email verification
 - Add audit logs for admin actions
 
 ---
 
-## 🤝 License
+## ✅ Routing Format
 
-MIT
+Route keys follow the format:
+```
+METHOD /path → controller@method
+```
+
+In `routes.php`, for example:
+```php
+'api/cow/buy.post' => [
+    'controller' => 'Api/CowController',
+    'method' => 'buy',
+],
+```
+
+
+---
+
+© 2025 Company Fast Project Refactor
